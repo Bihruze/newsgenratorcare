@@ -1,4 +1,4 @@
-import { GoogleGenerativeAI } from "@google/generative-ai";
+import OpenAI from "openai";
 import { AppState, GeneratedArticle } from "../types";
 import { COIN_FACTS } from "./coinFacts";
 
@@ -6,13 +6,13 @@ const PROMO_TEMPLATE_FULL = `
 Structure:
 Section 1 (Informative Transition + Insight):
 Write H2 about Promotional Coin follow trending of market and original article.
-Write 1 sentences that expand on the article’s topic by providing helpful or interesting insight about the project (e.g., its latest update, potential, or relevance to market trends). Keep it educational — not promotional.
-Start with a brief reference to the article’s topic (1 short sentence) to make it flow naturally.
+Write 1 sentences that expand on the article's topic by providing helpful or interesting insight about the project (e.g., its latest update, potential, or relevance to market trends). Keep it educational — not promotional.
+Start with a brief reference to the article's topic (1 short sentence) to make it flow naturally.
 Then add 1–5 sentences of helpful or interesting insight about the project ([Project Name]) — such as its latest update, market relevance, or ecosystem growth.
 Tone: factual, educational, and consistent with the article — not overly promotional.
 
-Section 2 (Informative CTA – must follow this structure): 
-Write this section in a similar structure to the example below, but optimize the language so it fits naturally with the article’s topic and feels informative.
+Section 2 (Informative CTA – must follow this structure):
+Write this section in a similar structure to the example below, but optimize the language so it fits naturally with the article's topic and feels informative.
 Keep all key elements (price analysis, buying guide, and official links) while making it sound relevant.
 Format to follow exactly (optimize wording for the article):
 If you're considering [Project Name], read our [Project Name] price analysis and be sure to check out our step-by-step guide to buying [Project Name] to build confidence and plan more accurately.
@@ -24,12 +24,12 @@ const PROMO_TEMPLATE_CTA = `
 Structure:
 Section 1 (Informative Transition + Insight):
 Write H2 about Promotional Coin follow trending of market and original article.
-Write 1 sentences that expand on the article’s topic by providing helpful or interesting insight about the project (e.g., its latest update, potential, or relevance to market trends). Keep it educational — not promotional.
-Start with a brief reference to the article’s topic (1 short sentence) to make it flow naturally.
+Write 1 sentences that expand on the article's topic by providing helpful or interesting insight about the project (e.g., its latest update, potential, or relevance to market trends). Keep it educational — not promotional.
+Start with a brief reference to the article's topic (1 short sentence) to make it flow naturally.
 Then add 1–5 sentences of helpful or interesting insight about the project ([Project Name]) — such as its latest update, market relevance, or ecosystem growth.
 Tone: factual, educational, and consistent with the article — not overly promotional.
 
-Section 2 (Informative CTA – must follow this structure): 
+Section 2 (Informative CTA – must follow this structure):
 Format to follow exactly (optimize wording for the article):
 Visit [the [Project Name] official website]
 `;
@@ -38,7 +38,10 @@ export const generateArticle = async (
   scrapedContent: string[],
   state: AppState
 ): Promise<GeneratedArticle> => {
-  const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || "");
+  const openai = new OpenAI({
+    apiKey: process.env.OPENAI_API_KEY || "",
+    dangerouslyAllowBrowser: true
+  });
 
   // Select logic based on Promo Mode
   let promoInstruction = "";
@@ -64,7 +67,7 @@ export const generateArticle = async (
 
   const systemInstruction = `
     You are an expert cryptocurrency news writer and SEO specialist.
-    
+
     ROLE:
     Write as an authoritative source covering cryptocurrency-related topics. Use a casual and personable tone, and include crypto-specific slang to make the content relatable to the target audience (cryptocurrency enthusiasts). Keep the style talkative and conversational. Use quick, clever humor when it fits. Address the reader in the second person singular ("you").
 
@@ -105,7 +108,7 @@ export const generateArticle = async (
     - If the Anchor Text is a long sentence, headline, or phrase, insert it as a standalone sentence or a reference (e.g., "Related: [Anchor Text](URL)") if it does not fit naturally into a paragraph.
     - Do NOT search for a natural occurrence if it doesn't exist; instead, INSERT the Anchor Text to ensure the link is present.
     - Do this for EVERY defined link pair provided.
-    
+
     OUTPUT FORMAT:
     You must output strictly valid JSON. Do not include markdown code blocks like \`\`\`json. Just the raw JSON string.
 
@@ -137,8 +140,8 @@ export const generateArticle = async (
   `;
 
   // Parse link definitions for context if needed, though instruction handles it generically
-  const linkContext = state.linkDefinitions 
-    ? `LINK DEFINITIONS (User provided Anchor Text and URLs in format "Anchor: ... Link: ..."):\n${state.linkDefinitions}` 
+  const linkContext = state.linkDefinitions
+    ? `LINK DEFINITIONS (User provided Anchor Text and URLs in format "Anchor: ... Link: ..."):\n${state.linkDefinitions}`
     : "No specific link definitions provided.";
 
   const userPrompt = `
@@ -154,13 +157,13 @@ export const generateArticle = async (
     - News Angle/Focus: ${state.newsAngle}
     - Additional Instructions: ${state.additionalContent}
     - Number of Main Content Sections: ${state.numSections}
-    
+
     ${linkContext}
 
     PROMOTIONAL CONTENT INSTRUCTIONS:
     - Promotional Coin: ${promoCoinName}
     - Mode: ${state.promoMode}
-    
+
     FACTUAL DATA FOR ${promoCoinName}:
     ${includePromo && coinFacts ? coinFacts : "N/A"}
 
@@ -170,84 +173,49 @@ export const generateArticle = async (
     ${includePromo ? "If promotional content is required, append it as the LAST section of the article content." : ""}
   `;
 
-  try {
-    const model = genAI.getGenerativeModel({
-      model: "gemini-1.5-flash",
-      systemInstruction: systemInstruction,
-      generationConfig: {
-        responseMimeType: "application/json",
-        temperature: 0.7,
-      }
-    });
+  // Model listesi - GPT-4o-mini ile başla, sonra GPT-4o
+  const models = ["gpt-4o-mini", "gpt-4o"];
+  const maxRetries = 2;
 
-    const result = await model.generateContent(userPrompt);
-    const response = await result.response;
-    const text = response.text();
+  for (const modelName of models) {
+    for (let attempt = 1; attempt <= maxRetries; attempt++) {
+      try {
+        console.log(`Trying ${modelName} (attempt ${attempt}/${maxRetries})...`);
 
-    if (!text) throw new Error("No response from Gemini");
-
-    // Clean up potential markdown blocks if the model ignores the strict instruction (safety net)
-    const jsonStr = text.replace(/```json/g, '').replace(/```/g, '').trim();
-
-    return JSON.parse(jsonStr) as GeneratedArticle;
-
-  } catch (error) {
-    console.error("Gemini Generation Error:", error);
-    throw error;
-  }
-};
-
-export const generateImage = async (prompt: string): Promise<string> => {
-  const SEEDREAM_API_KEY = process.env.SEEDREAM_API_KEY || "";
-
-  try {
-    // Seedream Text-to-Image API
-    const response = await fetch("https://api.seedream.ai/v1/images/generations", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "Authorization": `Bearer ${SEEDREAM_API_KEY}`
-      },
-      body: JSON.stringify({
-        prompt: prompt,
-        model: "seedream-3.0",
-        size: "1024x1024",
-        n: 1
-      })
-    });
-
-    if (!response.ok) {
-      const errorData = await response.text();
-      throw new Error(`Seedream API error: ${response.status} - ${errorData}`);
-    }
-
-    const data = await response.json();
-
-    // Check if response contains base64 data
-    if (data.data && data.data[0]) {
-      if (data.data[0].b64_json) {
-        return data.data[0].b64_json;
-      }
-      if (data.data[0].url) {
-        // If URL is returned, fetch and convert to base64
-        const imageResponse = await fetch(data.data[0].url);
-        const blob = await imageResponse.blob();
-        return new Promise((resolve, reject) => {
-          const reader = new FileReader();
-          reader.onloadend = () => {
-            const base64 = (reader.result as string).split(',')[1];
-            resolve(base64);
-          };
-          reader.onerror = reject;
-          reader.readAsDataURL(blob);
+        const response = await openai.chat.completions.create({
+          model: modelName,
+          messages: [
+            { role: "system", content: systemInstruction },
+            { role: "user", content: userPrompt }
+          ],
+          temperature: 0.7,
+          response_format: { type: "json_object" }
         });
+
+        const text = response.choices[0]?.message?.content;
+        if (!text) throw new Error("No response from OpenAI");
+
+        // Clean up potential markdown blocks if the model ignores the strict instruction (safety net)
+        const jsonStr = text.replace(/```json/g, '').replace(/```/g, '').trim();
+
+        return JSON.parse(jsonStr) as GeneratedArticle;
+
+      } catch (error: any) {
+        console.error(`${modelName} attempt ${attempt} failed:`, error.message);
+
+        // Rate limit ise bekle ve tekrar dene
+        if (error.message?.includes('429') || error.message?.includes('rate')) {
+          const waitTime = attempt * 2000;
+          console.log(`Waiting ${waitTime/1000}s before retry...`);
+          await new Promise(resolve => setTimeout(resolve, waitTime));
+          continue;
+        }
+
+        // Diğer hatalar için bir sonraki modele geç
+        break;
       }
     }
-
-    throw new Error("No image data received from Seedream API.");
-
-  } catch (error) {
-    console.error("Image Generation Error:", error);
-    throw error;
   }
+
+  throw new Error("All models failed. Please try again later.");
 };

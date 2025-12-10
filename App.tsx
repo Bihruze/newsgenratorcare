@@ -4,7 +4,7 @@ import { ArticleDisplay } from './components/ArticleDisplay';
 import { ImageGenerator } from './components/ImageGenerator';
 import { AppState, GeneratedArticle, LogEntry } from './types';
 import { scrapeContent } from './services/jinaService';
-import { generateArticle } from './services/geminiService';
+import { generateArticle } from './services/openaiService';
 import { FileText, Loader2, AlertCircle } from 'lucide-react';
 
 const INITIAL_STATE: AppState = {
@@ -75,7 +75,7 @@ const App: React.FC = () => {
       }
 
       // 3. Generate with Gemini
-      addLog(`Generating article with Gemini (${state.selectedLanguage})...`, 'info');
+      addLog(`Generating article with ChatGPT (${state.selectedLanguage})...`, 'info');
       const generatedArticle = await generateArticle(scrapedContents, state);
       
       setResult(generatedArticle);
