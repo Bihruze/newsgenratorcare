@@ -1,3 +1,100 @@
+// Coin internal links for promotional sections
+export const COIN_LINKS: Record<string, { priceAnalysis: string; buyingGuide: string; officialSite: string; twitter?: string; telegram?: string }> = {
+  "Best Wallet": {
+    priceAnalysis: "https://cryptonews.com/news/best-wallet-token-price-prediction/",
+    buyingGuide: "https://cryptonews.com/how-to-buy/best-wallet-token/",
+    officialSite: "https://bestwallet.com/",
+    twitter: "https://x.com/BestWalletHQ",
+    telegram: "https://t.me/BestWalletPortal"
+  },
+  "Bitcoin": {
+    priceAnalysis: "https://cryptonews.com/news/bitcoin-price-prediction/",
+    buyingGuide: "https://cryptonews.com/how-to-buy/bitcoin/",
+    officialSite: "https://bitcoin.org/",
+    twitter: "https://x.com/Bitcoin"
+  },
+  "Bitcoin Hyper": {
+    priceAnalysis: "https://cryptonews.com/news/bitcoin-hyper-price-prediction/",
+    buyingGuide: "https://cryptonews.com/how-to-buy/bitcoin-hyper/",
+    officialSite: "https://bitcoinhyper.io/",
+    twitter: "https://x.com/BitcoinHyper",
+    telegram: "https://t.me/BitcoinHyper"
+  },
+  "Dogecoin": {
+    priceAnalysis: "https://cryptonews.com/news/dogecoin-price-prediction/",
+    buyingGuide: "https://cryptonews.com/how-to-buy/dogecoin/",
+    officialSite: "https://dogecoin.com/",
+    twitter: "https://x.com/dogecoin"
+  },
+  "Ethereum": {
+    priceAnalysis: "https://cryptonews.com/news/ethereum-price-prediction/",
+    buyingGuide: "https://cryptonews.com/how-to-buy/ethereum/",
+    officialSite: "https://ethereum.org/",
+    twitter: "https://x.com/ethereum"
+  },
+  "Maxi Doge": {
+    priceAnalysis: "https://cryptonews.com/news/maxi-doge-price-prediction/",
+    buyingGuide: "https://cryptonews.com/how-to-buy/maxi-doge/",
+    officialSite: "https://maxidoge.com/",
+    twitter: "https://x.com/MaxiDogeToken",
+    telegram: "https://t.me/MaxiDoge"
+  },
+  "Pepenode": {
+    priceAnalysis: "https://cryptonews.com/news/pepenode-price-prediction/",
+    buyingGuide: "https://cryptonews.com/how-to-buy/pepenode/",
+    officialSite: "https://pepenode.io/",
+    twitter: "https://x.com/pepenodecoin",
+    telegram: "https://t.me/pepenode"
+  },
+  "Pepe Unchained": {
+    priceAnalysis: "https://cryptonews.com/news/pepe-unchained-price-prediction/",
+    buyingGuide: "https://cryptonews.com/how-to-buy/pepe-unchained/",
+    officialSite: "https://pepeunchained.com/",
+    twitter: "https://x.com/peaborz_token",
+    telegram: "https://t.me/pepeunchained"
+  },
+  "Shiba Inu": {
+    priceAnalysis: "https://cryptonews.com/news/shiba-inu-price-prediction/",
+    buyingGuide: "https://cryptonews.com/how-to-buy/shiba-inu/",
+    officialSite: "https://shibatoken.com/",
+    twitter: "https://x.com/Shibtoken",
+    telegram: "https://t.me/ShibaInu_Dogecoinkiller"
+  },
+  "Snorter Token": {
+    priceAnalysis: "https://cryptonews.com/news/snorter-token-price-prediction/",
+    buyingGuide: "https://cryptonews.com/how-to-buy/snorter-token/",
+    officialSite: "https://snorter.io/",
+    twitter: "https://x.com/SnorterToken",
+    telegram: "https://t.me/SnorterToken"
+  },
+  "Solana": {
+    priceAnalysis: "https://cryptonews.com/news/solana-price-prediction/",
+    buyingGuide: "https://cryptonews.com/how-to-buy/solana/",
+    officialSite: "https://solana.com/",
+    twitter: "https://x.com/solana"
+  },
+  "Solaxy": {
+    priceAnalysis: "https://cryptonews.com/news/solaxy-price-prediction/",
+    buyingGuide: "https://cryptonews.com/how-to-buy/solaxy/",
+    officialSite: "https://solaxy.io/",
+    twitter: "https://x.com/ABORASOL",
+    telegram: "https://t.me/solaxy_token"
+  },
+  "SUBBD": {
+    priceAnalysis: "https://cryptonews.com/news/subbd-price-prediction/",
+    buyingGuide: "https://cryptonews.com/how-to-buy/subbd/",
+    officialSite: "https://subbd.com/",
+    twitter: "https://x.com/SUBBDofficial",
+    telegram: "https://t.me/SUBBDofficial"
+  },
+  "XRP": {
+    priceAnalysis: "https://cryptonews.com/news/xrp-price-prediction/",
+    buyingGuide: "https://cryptonews.com/how-to-buy/xrp/",
+    officialSite: "https://ripple.com/xrp/",
+    twitter: "https://x.com/Ripple"
+  }
+};
+
 export const COIN_FACTS: Record<string, string> = {
   "Best Wallet": `
 # BestWallet.com/th is the Best Crypto Wallet

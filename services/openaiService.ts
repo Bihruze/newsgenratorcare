@@ -54,6 +54,7 @@ const getPromoTemplateFull = (coinName: string, language: string) => {
       priceAnalysis: `analisi del prezzo di ${coinName}`,
       buyingGuide: `guida passo-passo per acquistare ${coinName}`,
       officialSite: `il sito ufficiale di ${coinName}`,
+      stayUpdated: 'Rimani aggiornato sulle ultime notizie tramite',
       visit: 'Visita'
     },
     'Japanese': {
@@ -390,7 +391,7 @@ export const generateArticle = async (
     - Anchor "kripto borsaları" → "Lider [kripto borsaları](url) bu gelişmeye hızlı tepki verdi."
 
     OUTPUT FORMAT:
-    You must output strictly valid JSON. Do not include markdown code blocks like ```json. Just the raw JSON string.
+    You must output strictly valid JSON. Do not include markdown code blocks like \`\`\`json. Just the raw JSON string.
 
     JSON SCHEMA:
     {
@@ -507,5 +508,36 @@ export const generateArticle = async (
   } catch (error: any) {
     console.error("OpenAI Error:", error.message);
     throw new Error(`OpenAI request failed: ${error.message}`);
+  }
+};
+
+export const generateImage = async (prompt: string): Promise<string> => {
+  if (!process.env.OPENAI_API_KEY) {
+    throw new Error("OpenAI API key is not configured.");
+  }
+
+  const openai = new OpenAI({
+    apiKey: process.env.OPENAI_API_KEY,
+    dangerouslyAllowBrowser: true
+  });
+
+  try {
+    const response = await openai.images.generate({
+      model: "dall-e-3",
+      prompt: prompt,
+      n: 1,
+      size: "1024x1024",
+      quality: "standard"
+    });
+
+    const imageUrl = response.data?.[0]?.url;
+    if (!imageUrl) {
+      throw new Error("Failed to generate image: No URL returned");
+    }
+
+    return imageUrl;
+  } catch (error: any) {
+    console.error("Image generation error:", error);
+    throw new Error(`Image generation failed: ${error.message}`);
   }
 };

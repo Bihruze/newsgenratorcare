@@ -1,6 +1,10 @@
 {
-  "buildCommand": "npm run build",
+  "buildCommand": "npm install && npm run build",
   "outputDirectory": "dist",
   "framework": "vite",
-  "installCommand": "npm install"
+  "installCommand": "npm install",
+  "nodeVersion": "20.x",
+  "env": {
+    "NODE_OPTIONS": "--max_old_space_size=4096"
+  }
 }

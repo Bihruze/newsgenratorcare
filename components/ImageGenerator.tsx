@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Image as ImageIcon, RotateCcw, Palette, Loader2 } from 'lucide-react';
-import { generateImage } from '../services/geminiService';
+import { generateImage } from '../services/openaiService';
 
 interface ImageGeneratorProps {
   initialPrompt: string;
