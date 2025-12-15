@@ -1,5 +1,5 @@
 import React from 'react';
-import { AppState, Language, PromoMode } from '../types';
+import { AppState, Language } from '../types';
 import { RefreshCw, HelpCircle } from 'lucide-react';
 
 interface SidebarProps {
@@ -107,7 +107,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ state, onChange, onGenerate, i
 
         {/* Number of Sections Slider */}
         <div>
-          <label className="block text-gray-700 font-medium mb-1">Number of Main Content Sections: <span className="text-red-500 font-bold">{state.numSections}</span></label>
+          <label className="block text-gray-700 font-medium mb-1">Minimum Sections (auto-expands based on source): <span className="text-red-500 font-bold">{state.numSections}</span></label>
           <input
             type="range"
             name="numSections"
@@ -117,6 +117,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ state, onChange, onGenerate, i
             onChange={handleInputChange}
             className="w-full h-1 bg-gray-300 rounded-lg appearance-none cursor-pointer accent-red-500"
           />
+          <p className="text-xs text-gray-500 mt-1">System will create more sections if source content requires it.</p>
         </div>
 
         {/* Additional Content */}
@@ -156,48 +157,15 @@ export const Sidebar: React.FC<SidebarProps> = ({ state, onChange, onGenerate, i
           />
         </div>
 
-        {/* Promo Mode */}
-        <div>
-           <div className="flex items-center gap-1 mb-2">
-             <label className="text-gray-700 font-medium">Promotional Section Mode</label>
-             <HelpCircle className="w-4 h-4 text-gray-400" />
+        {/* CTA Info */}
+        <div className="bg-green-50 border border-green-200 rounded-md p-3">
+           <div className="flex items-center gap-2 mb-1">
+             <span className="text-green-700 font-medium text-sm">CTA Always Included</span>
+             <HelpCircle className="w-4 h-4 text-green-500" />
            </div>
-           
-           <div className="flex flex-col gap-2">
-             <label className="flex items-center gap-2 cursor-pointer">
-               <input 
-                  type="radio" 
-                  name="promoMode" 
-                  value="Full" 
-                  checked={state.promoMode === 'Full'} 
-                  onChange={handleInputChange}
-                  className="w-4 h-4 text-red-500 focus:ring-red-500 accent-red-500"
-               />
-               <span>Full promotional section + CTA</span>
-             </label>
-             <label className="flex items-center gap-2 cursor-pointer">
-               <input 
-                  type="radio" 
-                  name="promoMode" 
-                  value="CTA Only" 
-                  checked={state.promoMode === 'CTA Only'} 
-                  onChange={handleInputChange}
-                  className="w-4 h-4 text-red-500 focus:ring-red-500 accent-red-500"
-               />
-               <span>CTA only (skip promotional paragraphs)</span>
-             </label>
-             <label className="flex items-center gap-2 cursor-pointer">
-               <input 
-                  type="radio" 
-                  name="promoMode" 
-                  value="No CTA" 
-                  checked={state.promoMode === 'No CTA'} 
-                  onChange={handleInputChange}
-                  className="w-4 h-4 text-red-500 focus:ring-red-500 accent-red-500"
-               />
-               <span>No CTA (skip promotional content)</span>
-             </label>
-           </div>
+           <p className="text-xs text-green-600">
+             When a promotional coin is selected, the CTA section will automatically be added as the last section of the article.
+           </p>
         </div>
 
         {/* Utility Buttons */}
